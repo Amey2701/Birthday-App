@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Birthday Application By Amey</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #72edf2 10%, #5151e5 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: #333;
+        }
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            width: 90%;
+            transition: transform 0.3s ease;
+        }
+        .container:hover {
+            transform: translateY(-5px);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 36px;
+            font-weight: bold;
+        }
+        .btn {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            font-size: 22px;
+            color: white;
+            background-color: #007bff;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+            transform: translateY(-3px);
+        }
+        .input-field {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 20px;
+            border: 2px solid #007bff;
+            border-radius: 5px;
+        }
+        #msg {
+            margin-top: 20px;
+            font-size: 24px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Birthday App</h1>
+        <form id="birthdayForm">
+            <input type="text" id="name" class="input-field" placeholder="Enter Name" />
+            <input type="date" id="dob" class="input-field" />
+            <input type="button" value="Add" class="btn" onclick="operations(event)" />
+            <input type="button" value="Remove" class="btn" onclick="operations(event)" />
+            <input type="button" value="Show" class="btn" onclick="operations(event)" />
+            <input type="button" value="Clear" class="btn" onclick="clearForm(event)" />
+        </form>
+        <h2 id="msg"></h2>
+    </div>
+
+    <script>
+        let names = [];
+        
+        function operations(event) {
+            event.preventDefault();
+            let msg = document.getElementById("msg");
+            let ele = event.target.value;
+            let nameInput = document.getElementById("name").value.trim();
+            let dobInput = document.getElementById("dob").value.trim();
+
+            if (ele === "Add") {
+                if (nameInput !== "" && dobInput !== "") {
+                    let existing = names.find(item => item.name.toLowerCase() === nameInput.toLowerCase());
+                    if (!existing) {
+                        let dobDate = new Date(dobInput);
+                        if (!isNaN(dobDate.getTime())) {
+                            names.push({ name: nameInput, dob: dobDate });
+                            msg.innerHTML = displayNames();
+                        } else {
+                            alert("Please enter a valid date of birth.");
+                        }
+                    } else {
+                        alert(nameInput + " is already in the list.");
+                    }
+                } else {
+                    alert("Please enter both name and date of birth.");
+                }
+            } else if (ele === "Remove") {
+                if (nameInput !== "") {
+                    let index = names.findIndex(item => item.name.toLowerCase() === nameInput.toLowerCase());
+                    if (index === -1) {
+                        alert(nameInput + " not found");
+                    } else {
+                        names.splice(index, 1);
+                        alert(nameInput + " Removed");
+                        msg.innerHTML = displayNames();
+                    }
+                } else {
+                    alert("Please enter a name to remove.");
+                }
+            } else if (ele === "Show") {
+                msg.innerHTML = displayNames();
+            }
+        }
+
+        function clearForm(event) {
+            event.preventDefault();
+            document.getElementById("birthdayForm").reset();
+            document.getElementById("msg").innerHTML = "";
+            names = [];
+            alert("List cleared");
+        }
+
+        function displayNames() {
+            let today = new Date();
+            today.setHours(0, 0, 0, 0);  // Clear time part for accurate date comparison
+            return names.map(item => {
+                let dob = item.dob;
+                dob.setFullYear(today.getFullYear());  // Compare only month and day
+                let message = item.name + " (DOB: " + formatDate(item.dob) + ")";
+                if (dob.getTime() === today.getTime()) {
+                    message += " - Happy Birthday!";
+                }
+                return message;
+            }).join("<br>");
+        }
+
+        function formatDate(date) {
+            let d = new Date(date);
+            let day = d.getDate().toString().padStart(2, '0');
+            let month = (d.getMonth() + 1).toString().padStart(2, '0');
+            let year = d.getFullYear();
+            return day + " - " + month + " - " + year;
+        }
+    </script>
+</body>
+</html>
